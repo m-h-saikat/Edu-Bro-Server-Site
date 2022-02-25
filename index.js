@@ -24,7 +24,7 @@ async function run() {
     const database = client.db("Edu-Bro");
     const allQuestionsCollection = database.collection("allQuestions");
     const reviewCollection = database.collection("review");
-    // const noteCollection = database.collection("note");
+    const noteCollection = database.collection("note");
     const userCollection = database.collection("user");
     const booksCollection = database.collection("books");
 
