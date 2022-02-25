@@ -61,11 +61,11 @@ async function run() {
    
 
 //  get collection
-// app.get("/allNotes", async (req, res) => {
-//   const cursor = noteCollection.find({});
-//   const allNotes = await cursor.toArray();
-//   res.send(allNotes);
-// });
+app.get("/allNotes", async (req, res) => {
+  const cursor = noteCollection.find({});
+  const allNotes = await cursor.toArray();
+  res.send(allNotes);
+});
 // app.post('/addNote', async (req, res) => {
 //   const allNote = req.body;
 //   const result = await noteCollection.insertOne(allNote);
