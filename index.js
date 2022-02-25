@@ -66,13 +66,13 @@ app.get("/allNotes", async (req, res) => {
   const allNotes = await cursor.toArray();
   res.send(allNotes);
 });
-// app.post('/addNote', async (req, res) => {
-//   const allNote = req.body;
-//   const result = await noteCollection.insertOne(allNote);
-//   res.json(result);
-//   console.log(result)
+app.post('/addNote', async (req, res) => {
+  const allNote = req.body;
+  const result = await noteCollection.insertOne(allNote);
+  res.json(result);
+  console.log(result)
 
-// });
+});
 
 
   } finally {
