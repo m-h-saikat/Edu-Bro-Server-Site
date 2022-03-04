@@ -12,8 +12,8 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.24hkl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
-
 const client = new MongoClient(uri, {
+  // @ts-ignore
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -26,7 +26,6 @@ async function run() {
     const reviewCollection = database.collection("review");
     const noteCollection = database.collection("note");
     const userCollection = database.collection("user");
-    const booksCollection = database.collection("books");
 
 
     // POST blogs
@@ -46,12 +45,24 @@ async function run() {
       res.send(allQuestions);
     });
 
+    // User Info 
 
+  
     // add user 
-    app.post("/addUserInfo", async (req, res) => {
+    app.post("/users", async (req, res) => {
       const result = await userCollection.insertOne(req.body);
       res.send(result);
+      console.log(result)
     });
+    // upsert for google login 
+    app.put('/users', async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email }
+      const options = { upsert: true }
+      const updatDoc = { $set: user }
+      const result = await userCollection.updateOne(filter, updatDoc, options)
+      res.json(result)
+    })
 
     //Books 
 
@@ -74,6 +85,13 @@ app.post('/addNote', async (req, res) => {
 
 });
 
+    // get single user
+    app.get('/users/:email', async (req, res) => {
+      const email = req.params.email
+      const query = { email: email }
+      const user = await userCollection.findOne(query)
+      res.json(user)
+    })
 
   } finally {
     // await client.close()
@@ -83,7 +101,7 @@ app.post('/addNote', async (req, res) => {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Running The Server");
+  res.send("Running The Edu-Bro Server");
 });
 
 app.listen(port, () => {
