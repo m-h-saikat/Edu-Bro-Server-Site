@@ -3,6 +3,24 @@ const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectId;
 const cors = require("cors");
 require("dotenv").config();
+const { google } = require('googleapis')
+
+const OAuth2Data = require('./credentials.json')
+
+const CLIENT_ID = OAuth2Data.web.client_id
+const CLIENT_SECRET = OAuth2Data.web.client_secret
+const REDIRECT_URI = OAuth2Data.web.redirect_uris[0]
+
+const OAuthClient = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REDIRECT_URI
+)
+
+const SCOPES = "https://www.googleapis.com/auth/drive.file https://googleapis.com/auth/userinfo/profile"
+
+
+
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -31,7 +49,19 @@ async function run() {
     const questionSolveCollection = database.collection("questionSolve");
     const BlogCommentCollection = database.collection("BlogComment");
 
-
+    // app.get('/google/callback', (req, res) => {
+    //   const code = req.query.code
+    //   if (code) {
+    //     OAuthClient.getToken(code, function (err, tokens) {
+    //       if (err) {
+    //         console.log('Error in Auth')
+    //       } else {
+    //         console.log(tokens)
+    //         OAuthClient.setCredentials(tokens)
+    //       }
+    //     })
+    //   }
+    // })
 
     // get question  solve
 
@@ -315,12 +345,13 @@ async function run() {
       const result = await allBlogsCollection.find({ email: req.params.email }).toArray()
       res.send(result)
     })
-    //MAKE ADMIN
+    // make admin 
     app.put('/users/admin', async (req, res) => {
       const user = req.body;
-      const filter = { email: user.email };
-      const updateDoc = { $set: { role: 'admin' } };
+      const filter = { email: user.email }
+      const updateDoc = { $set: { role: 'admin' } }
       const result = await userCollection.updateOne(filter, updateDoc)
+      console.log(filter);
       res.json(result)
     })
 
@@ -330,7 +361,7 @@ async function run() {
       const query = { email: email };
       const user = await userCollection.findOne(query)
       let isAdmin = false;
-      if (user?.role === 'admin') {
+      if (user.role === 'admin') {
         isAdmin = true;
       }
       res.json({ admin: isAdmin });
